@@ -7,10 +7,12 @@ mimetypes = Dict([
 ])
 
 
-HTTP.serve("0.0.0.0", 8080) do req::HTTP.Request
+function handler(req::HTTP.Request) 
 
-  @show req.target
-  filename = basename(HTTP.URI(req.target).path)
+  target = HTTP.URI(req.target)
+  @show target
+
+  filename = basename(target.path)
   filename = ifelse(isempty(filename), "index.html", filename)
 
   if isfile(filename)
@@ -24,9 +26,17 @@ HTTP.serve("0.0.0.0", 8080) do req::HTTP.Request
 
     return HTTP.Response(200, headers, body = read(filename))
   else
-    return HTTP.Response(200, [("Content-Type", "audio/mp3")], body = call("hello"))
+    text = target.query |>
+      HTTP.queryparams |>
+      x -> get(x, "text", nothing)
+
+    return HTTP.Response(200, [("Content-Type", "audio/opus")], body = call(text))
   end
 
+end
 
+
+if (!@isdefined server)
+  server = Base.Threads.@spawn HTTP.serve(handler , "0.0.0.0", 8080)
 end
 

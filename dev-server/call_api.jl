@@ -9,7 +9,24 @@ header = [
 
 
 function call(s)
-  r = HTTP.post("$url?key=$(ENV["API_KEY"])", header, open("sample.json", "r"))
+
+  ssml = """
+  {
+    'input': {
+      'text': "$s"
+    },
+    'voice': {
+      'languageCode': 'ja-JP',
+      'name': 'ja-JP-Wavenet-B',
+      'ssmlGender': 'FEMALE'
+    },
+    'audioConfig': {
+      'audioEncoding': 'OGG_OPUS'
+    }
+  }
+"""
+
+  r = HTTP.post("$url?key=$(ENV["API_KEY"])", header, ssml)
 
   r.body |> 
     String |> 
