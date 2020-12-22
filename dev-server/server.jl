@@ -24,6 +24,9 @@ HTTP.serve("0.0.0.0", 8080) do req::HTTP.Request
 
     return HTTP.Response(200, headers, body = read(filename))
   else
-    @show return HTTP.Response(404)
+    return HTTP.Response(200, [("Content-Type", "audio/mp3")], body = call("hello"))
   end
+
+
 end
+
