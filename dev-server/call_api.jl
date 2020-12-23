@@ -10,11 +10,23 @@ header = [
 
 function call(s)
 
-  ssml = """
+  @show "--------------------------"
+  @show s
+  @show "--------------------------"
+
+  if isa(s, SSML)
+    input = """
+    'ssml': "$s"
+    """
+  else
+    input = """
+    'text': "$s"
+    """ 
+  end 
+
+  body = """
   {
-    'input': {
-      'text': "$s"
-    },
+    'input': { $input },
     'voice': {
       'languageCode': 'ja-JP',
       'name': 'ja-JP-Wavenet-B',
@@ -26,7 +38,7 @@ function call(s)
   }
 """
 
-  r = HTTP.post("$url?key=$(ENV["API_KEY"])", header, ssml)
+  r = HTTP.post("$url?key=$(ENV["API_KEY"])", header, body)
 
   r.body |> 
     String |> 

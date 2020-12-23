@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/x-icon;,">
     <script type="module" src="main.js"></script>
+    <style>
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 100px;
+}
+    
+    </style>
   </head>
   <body>
-    <button id="button">OK</button>
+    <form id="form" name="form">
+      <label><input type="radio" name="radio" value="text">text</label>
+      <label><input type="radio" name="radio" value="ssml">ssml</label>
+      <button type="submit">OK</button>
+      <textarea name="text"></textarea>
+      <textarea name="ssml"></textarea>
+    </form>
+    <canvas id="canvas" width="200" height="200"></canvas>
   </body>
 </html>
