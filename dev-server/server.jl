@@ -6,9 +6,23 @@ mimetypes = Dict([
   (".mp3", "audio/mpeg")
 ])
 
-struct SSML
-  value:: AbstractString
+abstract type MarkupString end
+Base.show(io::IO, s::MarkupString) = Base.print(io, value(s))
+
+
+struct SSML <: MarkupString
+  ssml::AbstractString
 end
+
+value(s::SSML) = s.ssml
+
+
+struct MARKDOWN <: MarkupString
+  markdown::AbstractString
+end
+
+value(s::MARKDOWN) = s.markdown
+
 
 function ssml(s) 
   if isnothing(s)
@@ -18,7 +32,13 @@ function ssml(s)
   end
 end
 
-Base.show(io::IO, s::SSML) = Base.print(io, s.value) 
+function markdown(s)
+  if isnothing(s)
+    nothing
+  else
+    MARKDOWN(s)
+  end
+end
 
 
 function handler(req::HTTP.Request) 
@@ -42,9 +62,11 @@ function handler(req::HTTP.Request)
   elseif filename == "speech"
     query = HTTP.queryparams(target.query)
     @show query
-    input = get(query, "text", ssml(get(query, "ssml", nothing)))
-    if isnothing(input)
-      error("require parameter text or ssml")
+    input = query |> d -> begin
+      haskey(d, "ssml") && return ssml(d["ssml"])
+      haskey(d, "markdown") && return markdown(d["markdown"])
+      haskey(d, "text") && return d["text"]
+      error("require parameter text or ssml or markdown")
     end
 
     return HTTP.Response(200, [("Content-Type", "audio/opus")], body = call(input))

@@ -18,6 +18,10 @@ function call(s)
     input = """
     'ssml': "$s"
     """
+  elseif isa(s, MARKDOWN)
+    input = """
+    'ssml': "$s"
+    """
   else
     input = """
     'text': "$s"
